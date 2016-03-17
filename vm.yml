@@ -1,0 +1,27 @@
+---
+- hosts: all
+  tasks:
+    - name: Install apt requirements
+      sudo: yes
+      apt: pkg={{item}} state=installed update_cache=yes
+      with_items:
+        - autoconf
+        - build-essential
+        - pkg-config
+        - libtool
+        - git
+        - zsh
+
+    - name: setup dotfiles
+      git: repo=ssh://git@github.com/mhan/dotfiles.git
+           dest=/home/vagrant/.dotfiles
+           accept_hostkey=yes
+
+    - name: Install dotfiles
+      shell: bash install
+      args:
+        chdir: /home/vagrant/.dotfiles/script
+
+    - name: chsh zsh
+      sudo: yes
+      shell: chsh -s /usr/bin/zsh vagrant
